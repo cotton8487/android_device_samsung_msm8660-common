@@ -86,6 +86,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
+    ro.am.reschedule_service=true \
     ro.config.max_starting_bg=8 \
     ro.sys.fw.bg_apps_limit=16 \
     ro.sys.fw.use_trim_settings=true \

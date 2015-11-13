@@ -537,8 +537,8 @@ service kickstart /system/bin/qcks l
     oneshot
     disabled
 
-service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
-    class main
+service mpdecision /system/bin/mpdecision --avg_comp
+    class late_start
     user root
     group system
     disabled

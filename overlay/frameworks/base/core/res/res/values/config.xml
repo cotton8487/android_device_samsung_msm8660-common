@@ -72,4 +72,8 @@
     <!-- Configuration to support SIM contact batch operation.-->
     <bool name="config_sim_phonebook_batch_operation">false</bool>
 
+    <!-- Older rotation sensors are not setting event.timestamp correctly. Setting to
+         true will use SystemClock.elapsedRealtimeNanos() to set timestamp. -->
+    <bool name="config_useSystemClockforRotationSensor">true</bool>
+
 </resources>

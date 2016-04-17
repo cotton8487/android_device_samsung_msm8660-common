@@ -55,7 +55,7 @@ on enable-low-power
     write /sys/devices/system/cpu/cpufreq/ondemand/sync_freq 1026000
     write /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load 80
     write /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate 50000
-    write /sys/kernel/cpu_input_boost/ib_freqs "1134000 1026000"
+    write /sys/kernel/cpu_input_boost/ib_freqs "1134000 1242000"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 1400
     write /sys/kernel/msm_thermal/enabled 0
     write /sys/kernel/msm_thermal/low_thresh "1188000 64 60"

@@ -29,6 +29,8 @@
 
 #include "power.h"
 
+#define STATE_ON "state=1"
+
 #define CPUFREQ_PATH "/sys/devices/system/cpu/cpu0/cpufreq/"
 #define SCALING_GOVERNOR_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 #define INTERACTIVE_PATH "/sys/devices/system/cpu/cpufreq/interactive/"
@@ -279,6 +281,40 @@ static void set_power_profile(int profile)
     current_power_profile = profile;
 }
 
+static void process_video_encode_hint(void *metadata)
+{
+    int on;
+
+    if (!metadata)
+        return;
+
+    on = !strncmp(metadata, STATE_ON, sizeof(STATE_ON));
+
+    if (get_scaling_governor() < 0) {
+        ALOGE("Can't read scaling governor.");
+    } else {
+        if (strncmp(governor, "ondemand", 8) == 0) {
+            ALOGD("process_video_encode_hint: ondemand");
+            sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ?
+                    VID_ENC_IO_IS_BUSY :
+                    ondemand_profiles[current_power_profile].io_is_busy);
+
+            sysfs_write_int(ONDEMAND_PATH "sampling_down_factor", on ?
+                    VID_ENC_SAMPLING_DOWN_FACTOR :
+                    ondemand_profiles[current_power_profile].sampling_down_factor);
+        } else if (strncmp(governor, "interactive", 11) == 0) {
+            ALOGD("process_video_encode_hint: interactive");
+            sysfs_write_int(INTERACTIVE_PATH "io_is_busy", on ?
+                    VID_ENC_IO_IS_BUSY :
+                    interactive_profiles[current_power_profile].io_is_busy);
+
+            sysfs_write_int(INTERACTIVE_PATH "timer_rate", on ?
+                    VID_ENC_TIMER_RATE :
+                    interactive_profiles[current_power_profile].timer_rate);
+        }
+    }
+}
+
 static void power_hint(__attribute__((unused)) struct power_module *module,
                        power_hint_t hint, void *data)
 {
@@ -337,6 +373,12 @@ static void power_hint(__attribute__((unused)) struct power_module *module,
         } else {
             low_power_mode = false;
         }
+        break;
+    case POWER_HINT_VIDEO_ENCODE:
+        ALOGV("%s: POWER_HINT_VIDEO_ENCODE", __func__);
+        pthread_mutex_lock(&lock);
+        process_video_encode_hint(data);
+        pthread_mutex_unlock(&lock);
         break;
     case POWER_HINT_DISABLE_TOUCH:
         ALOGD("%s: POWER_HINT_DISABLE_TOUCH", __func__);

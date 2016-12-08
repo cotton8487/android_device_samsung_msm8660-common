@@ -69,4 +69,7 @@
     <!-- Expose notification LED configuration in Settings (for BLN) -->
     <bool name="config_intrusiveNotificationLed">true</bool>
 
+    <!-- Configuration to support SIM contact batch operation.-->
+    <bool name="config_sim_phonebook_batch_operation">false</bool>
+
 </resources>

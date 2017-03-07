@@ -98,6 +98,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.sys.fw.bservice_limit=5 \
     ro.sys.fw.bservice_age=5000
 
+# Timeout failed shutdowns
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.shutdown_timeout=5
+
 # Ramdisk
 PRODUCT_PACKAGES += \
     fstab.qcom \

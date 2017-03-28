@@ -192,8 +192,8 @@ on boot
     chmod 0660 /sys/class/graphics/fb1/power_state
 
     #increase dirty_writeback_interval
-    write /proc/sys/vm/dirty_writeback_centisecs 60000
-    write /proc/sys/vm/dirty_expire_centisecs 60000
+    #write /proc/sys/vm/dirty_writeback_centisecs 60000
+    #write /proc/sys/vm/dirty_expire_centisecs 60000
 
     #Swap only 1 page at a time
     write /proc/sys/vm/page-cluster 0

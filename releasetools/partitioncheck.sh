@@ -16,7 +16,7 @@ ENC_DATA_PARTITION="/dev/block/dm-0"
 VP_DATA_PARTITION="/dev/block/mmcblk0p28"
 VP_SYSTEM_PARTITION="/dev/block/mmcblk0p25"
 # This is the stock PIT file's MD5. 
-STOCK_PIT_MD5="b8997d010456d4f1986db968b28c53ec"
+STOCK_PIT_MD5="1b12bd4f4451a6b5e999f460d9246b1f"
 PIT_MD5=$(md5sum /dev/block/mmcblk0p11 | awk '{ print $1 }');
 
 # ui_print by Chainfire

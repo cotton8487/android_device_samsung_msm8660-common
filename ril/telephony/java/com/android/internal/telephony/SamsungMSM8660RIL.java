@@ -221,6 +221,9 @@ public class SamsungMSM8660RIL extends RIL implements CommandsInterface {
                     setCellInfoListRate(Integer.MAX_VALUE, null);
                 notifyRegistrantsRilConnectionChanged(((int[])ret)[0]);
                 break;
+            case RIL_UNSOL_NITZ_TIME_RECEIVED:
+                handleNitzTimeReceived(p);
+                break;
             // SAMSUNG STATES
             case 11010: // RIL_UNSOL_AM:
                 ret = responseString(p);
@@ -402,6 +405,43 @@ public class SamsungMSM8660RIL extends RIL implements CommandsInterface {
         } else if (state == 0) {
             Rlog.d(RILJ_LOG_TAG, "setWbAmr(): setting audio parameter - wb_amr=off");
             mAudioManager.setParameters("wide_voice_enable=false");
+        }
+    }
+
+    private void
+    handleNitzTimeReceived(Parcel p) {
+        String nitz = (String)responseString(p);
+        //if (RILJ_LOGD) unsljLogRet(RIL_UNSOL_NITZ_TIME_RECEIVED, nitz);
+
+        // has bonus long containing milliseconds since boot that the NITZ
+        // time was received
+        long nitzReceiveTime = p.readLong();
+
+        Object[] result = new Object[2];
+
+        String fixedNitz = nitz;
+        String[] nitzParts = nitz.split(",");
+        if (nitzParts.length == 4) {
+            // 0=date, 1=time+zone, 2=dst, 3=garbage that confuses GsmServiceStateTracker (so remove it)
+            fixedNitz = nitzParts[0]+","+nitzParts[1]+","+nitzParts[2]+",";
+        }
+
+        result[0] = fixedNitz;
+        result[1] = Long.valueOf(nitzReceiveTime);
+
+        boolean ignoreNitz = SystemProperties.getBoolean(
+                        TelephonyProperties.PROPERTY_IGNORE_NITZ, false);
+
+        if (ignoreNitz) {
+            if (RILJ_LOGD) riljLog("ignoring UNSOL_NITZ_TIME_RECEIVED");
+        } else {
+            if (mNITZTimeRegistrant != null) {
+                mNITZTimeRegistrant
+                .notifyRegistrant(new AsyncResult (null, result, null));
+            } else {
+                // in case NITZ time registrant isnt registered yet
+                mLastNITZTimeInfo = result;
+            }
         }
     }
 

@@ -52,7 +52,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.audio.fluence.speaker=true \
+    persist.audio.fluence.speaker=false \
     persist.audio.fluence.voicecall=true \
     qcom.hw.aac.encoder=true
 
@@ -74,8 +74,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # RIL Class
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.telephony.ril_class=SamsungMSM8660RIL \
-    ro.ril.telephony.mqanelements=5
+    ro.telephony.ril_class=SamsungMSM8660RIL
 
 # ART
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -85,6 +84,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.low_ram=true \
+    persist.sys.force_highendgfx=true \
+    config.disable_atlas=true \
     ro.config.max_starting_bg=8 \
     ro.sys.fw.bg_apps_limit=16 \
     ro.sys.fw.use_trim_settings=true \
@@ -95,6 +97,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.sys.fw.bservice_enable=true \
     ro.sys.fw.bservice_limit=5 \
     ro.sys.fw.bservice_age=5000
+
+# Timeout failed shutdowns
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.shutdown_timeout=5
 
 # Ramdisk
 PRODUCT_PACKAGES += \

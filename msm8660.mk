@@ -80,12 +80,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # ART
 PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-flags=--no-watch-dog \
-    dalvik.vm.dex2oat-swap=false \
-    dalvik.vm.image-dex2oat-filter=speed
+    dalvik.vm.dex2oat-swap=false
 
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
     ro.config.max_starting_bg=8 \
     ro.sys.fw.bg_apps_limit=16 \

@@ -48,6 +48,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=dyn \
+    debug.hwc.dynThreshold=1.9 \
+    debug.mdpcomp.maxlayer=3 \
     persist.hwc.mdpcomp.enable=false \
     ro.opengles.version=131072
 

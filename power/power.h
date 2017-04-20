@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 The CyanogenMod Project
+ * Copyright (C) 2015-2016 The CyanogenMod Project
+ * Copyright (C) 2017, The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,6 @@ typedef struct ondemand_governor_settings {
     int sampling_down_factor;
     int down_differential;
     int up_threshold_multi_core;
-    int down_differential_multi_core;
     int optimal_freq;
     int sync_freq;
     int up_threshold_any_cpu_load;
@@ -49,7 +49,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 486000,
         .sync_freq = 540000,
         .up_threshold_any_cpu_load = 80,
@@ -66,7 +65,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -83,7 +81,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -100,7 +97,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -117,7 +113,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 1512000,
         .sync_freq = 1512000,
         .up_threshold_any_cpu_load = 80,

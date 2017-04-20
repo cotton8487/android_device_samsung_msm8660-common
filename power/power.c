@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 The CyanogenMod Project
+ * Copyright (C) 2015-2016 The CyanogenMod Project
+ * Copyright (C) 2017, The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +21,8 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <utils/Log.h>
@@ -36,11 +39,14 @@
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static int boostpulse_fd = -1;
+static int ib_boost_fd = -1;
 
 static int current_power_profile = -1;
 static int requested_power_profile = -1;
 
 static char governor[20];
+
+static bool low_power_mode = false;
 
 static int sysfs_read(char *path, char *s, int num_bytes)
 {
@@ -141,6 +147,17 @@ static int boostpulse_open()
     return boostpulse_fd;
 }
 
+static int ib_boost_open()
+{
+    pthread_mutex_lock(&lock);
+    if (ib_boost_fd < 0) {
+        ib_boost_fd = open(INPUT_BOOST_PATH "ib_boost", O_WRONLY);
+    }
+    pthread_mutex_unlock(&lock);
+
+    return ib_boost_fd;
+}
+
 static void power_set_interactive(__attribute__((unused)) struct power_module *module, int on)
 {
     if (!is_profile_valid(current_power_profile)) {
@@ -148,12 +165,30 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
         return;
     }
 
-    sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",
-                    interactive_profiles[current_power_profile].hispeed_freq);
-    sysfs_write_int(INTERACTIVE_PATH "go_hispeed_load",
-                    interactive_profiles[current_power_profile].go_hispeed_load);
-    sysfs_write_str(INTERACTIVE_PATH "target_loads",
-                    interactive_profiles[current_power_profile].target_loads);
+    ALOGV("power_set_interactive: %d", on);
+
+    /*
+     * Lower maximum frequency when screen is off.
+     */
+    if (!on || low_power_mode) {
+        sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
+                    alt_profiles[PROFILE_POWER_SAVE].scaling_max_freq);
+    } else {
+        sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
+                    alt_profiles[current_power_profile].scaling_max_freq);
+    }
+
+    if (get_scaling_governor() < 0) {
+        ALOGE("Can't read scaling governor.");
+    } else {
+        if (strncmp(governor, "ondemand", 8) == 0) {
+                sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ? 1 : 0);
+        } else if (strncmp(governor, "interactive", 11) == 0) {
+                sysfs_write_int(INTERACTIVE_PATH "io_is_busy", on ? 1 : 0);
+        }
+    }
+
+    ALOGV("power_set_interactive: %d done", on);
 }
 
 static void set_power_profile(int profile)
@@ -184,8 +219,6 @@ static void set_power_profile(int profile)
                                 ondemand_profiles[profile].down_differential);
                 sysfs_write_int(ONDEMAND_PATH "up_threshold_multi_core",
                                 ondemand_profiles[profile].up_threshold_multi_core);
-                sysfs_write_int(ONDEMAND_PATH "down_differential_multi_core",
-                                ondemand_profiles[profile].down_differential_multi_core);
                 sysfs_write_int(ONDEMAND_PATH "optimal_freq",
                                 ondemand_profiles[profile].optimal_freq);
                 sysfs_write_int(ONDEMAND_PATH "sync_freq",
@@ -249,11 +282,18 @@ static void set_power_profile(int profile)
 static void power_hint(__attribute__((unused)) struct power_module *module,
                        power_hint_t hint, void *data)
 {
-    char buf[80];
-    int len;
-
     switch (hint) {
+    case POWER_HINT_VSYNC:
+        break;
     case POWER_HINT_INTERACTION:
+        /* This is handled by cpu input boost driver */
+        break;
+    case POWER_HINT_LAUNCH:
+        ALOGV("%s: POWER_HINT_LAUNCH", __func__);
+    case POWER_HINT_CPU_BOOST:
+        if (hint == POWER_HINT_CPU_BOOST)
+            ALOGV("%s: POWER_HINT_CPU_BOOST", __func__);
+
         if (!is_profile_valid(current_power_profile)) {
             ALOGD("%s: no power profile selected yet", __func__);
             return;
@@ -263,15 +303,24 @@ static void power_hint(__attribute__((unused)) struct power_module *module,
             return;
 
         if (boostpulse_open() >= 0) {
-            snprintf(buf, sizeof(buf), "%d", 1);
-            len = write(boostpulse_fd, &buf, sizeof(buf));
+            int len = write(boostpulse_fd, "1", 2);
             if (len < 0) {
-                strerror_r(errno, buf, sizeof(buf));
-                ALOGE("Error writing to boostpulse: %s\n", buf);
+                ALOGE("Error writing to boostpulse: %s\n", strerror(errno));
 
                 pthread_mutex_lock(&lock);
                 close(boostpulse_fd);
                 boostpulse_fd = -1;
+                pthread_mutex_unlock(&lock);
+            }
+        } else if (ib_boost_open() >= 0) {
+            int len = write(ib_boost_fd, "1", 2);
+            ALOGV("%s: Writing to ib_boost\n", __func__);
+            if (len < 0) {
+                ALOGE("Error writing to boostpulse: %s\n", strerror(errno));
+
+                pthread_mutex_lock(&lock);
+                close(ib_boost_fd);
+                ib_boost_fd = -1;
                 pthread_mutex_unlock(&lock);
             }
         }
@@ -283,8 +332,17 @@ static void power_hint(__attribute__((unused)) struct power_module *module,
         break;
     case POWER_HINT_LOW_POWER:
         /* This hint is handled by the framework */
+        if (data) {
+            low_power_mode = true;
+        } else {
+            low_power_mode = false;
+        }
+        break;
+    case POWER_HINT_DISABLE_TOUCH:
+        ALOGD("%s: POWER_HINT_DISABLE_TOUCH", __func__);
         break;
     default:
+        ALOGD("%s: Unknown power hint: %d", __func__, hint);
         break;
     }
 }

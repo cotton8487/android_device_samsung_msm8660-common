@@ -2,3 +2,4 @@ allow bluetooth firmware_file:dir r_dir_perms;
 allow bluetooth firmware_file:file r_file_perms;
 allow bluetooth proc_bthc:dir search;
 allow bluetooth proc_bthc:file { open read write };
+allow bluetooth wifi_data_file:file { r_file_perms };

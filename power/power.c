@@ -174,19 +174,39 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
      */
     if (!on || low_power_mode) {
         sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
-                    alt_profiles[PROFILE_POWER_SAVE].scaling_max_freq);
+                        alt_profiles[PROFILE_POWER_SAVE].scaling_max_freq);
     } else {
         sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
-                    alt_profiles[current_power_profile].scaling_max_freq);
+                        alt_profiles[current_power_profile].scaling_max_freq);
     }
 
     if (get_scaling_governor() < 0) {
         ALOGE("Can't read scaling governor.");
     } else {
         if (strncmp(governor, "ondemand", 8) == 0) {
-                sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ? 1 : 0);
+            sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ? 1 : 0);
         } else if (strncmp(governor, "interactive", 11) == 0) {
-                sysfs_write_int(INTERACTIVE_PATH "io_is_busy", on ? 1 : 0);
+            if (on) {
+                sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",
+                                interactive_profiles[current_power_profile].hispeed_freq);
+                sysfs_write_int(INTERACTIVE_PATH "go_hispeed_load",
+                                interactive_profiles[current_power_profile].go_hispeed_load);
+                sysfs_write_int(INTERACTIVE_PATH "timer_rate",
+                                interactive_profiles[current_power_profile].timer_rate);
+                sysfs_write_str(INTERACTIVE_PATH "target_loads",
+                                interactive_profiles[current_power_profile].target_loads);
+                sysfs_write_int(INTERACTIVE_PATH "io_is_busy", 1);
+            } else {
+                sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",
+                                interactive_profiles[current_power_profile].hispeed_freq_off);
+                sysfs_write_int(INTERACTIVE_PATH "go_hispeed_load",
+                                interactive_profiles[current_power_profile].go_hispeed_load_off);
+                sysfs_write_int(INTERACTIVE_PATH "timer_rate",
+                                interactive_profiles[current_power_profile].timer_rate_off);
+                sysfs_write_str(INTERACTIVE_PATH "target_loads",
+                                interactive_profiles[current_power_profile].target_loads_off);
+                sysfs_write_int(INTERACTIVE_PATH "io_is_busy", 0);
+            }
         }
     }
 
@@ -209,72 +229,76 @@ static void set_power_profile(int profile)
         ALOGE("Can't read scaling governor.");
     } else {
         if (strncmp(governor, "ondemand", 8) == 0) {
-                sysfs_write_int(INPUT_BOOST_PATH "enabled",
-                                ondemand_profiles[profile].input_boost_on);
-                sysfs_write_int(ONDEMAND_PATH "up_threshold",
-                                ondemand_profiles[profile].up_threshold);
-                sysfs_write_int(ONDEMAND_PATH "io_is_busy",
-                                ondemand_profiles[profile].io_is_busy);
-                sysfs_write_int(ONDEMAND_PATH "sampling_down_factor",
-                                ondemand_profiles[profile].sampling_down_factor);
-                sysfs_write_int(ONDEMAND_PATH "down_differential",
-                                ondemand_profiles[profile].down_differential);
-                sysfs_write_int(ONDEMAND_PATH "up_threshold_multi_core",
-                                ondemand_profiles[profile].up_threshold_multi_core);
-                sysfs_write_int(ONDEMAND_PATH "optimal_freq",
-                                ondemand_profiles[profile].optimal_freq);
-                sysfs_write_int(ONDEMAND_PATH "sync_freq",
-                                ondemand_profiles[profile].sync_freq);
-                sysfs_write_int(ONDEMAND_PATH "up_threshold_any_cpu_load",
-                                ondemand_profiles[profile].up_threshold_any_cpu_load);
-                sysfs_write_int(ONDEMAND_PATH "sampling_rate",
-                                ondemand_profiles[profile].sampling_rate);
-                sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
-                                ondemand_profiles[profile].scaling_max_freq);
-                sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
-                                ondemand_profiles[profile].scaling_min_freq);
-                sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
-                                ondemand_profiles[profile].input_boost_freqs);
-                sysfs_write_str(GPU_GOVERNOR_PATH,
-                                ondemand_profiles[profile].gpu_governor);
+            sysfs_write_int(INPUT_BOOST_PATH "enabled",
+                            ondemand_profiles[profile].input_boost_on);
+            sysfs_write_int(ONDEMAND_PATH "up_threshold",
+                            ondemand_profiles[profile].up_threshold);
+            sysfs_write_int(ONDEMAND_PATH "io_is_busy",
+                            ondemand_profiles[profile].io_is_busy);
+            sysfs_write_int(ONDEMAND_PATH "sampling_down_factor",
+                            ondemand_profiles[profile].sampling_down_factor);
+            sysfs_write_int(ONDEMAND_PATH "down_differential",
+                            ondemand_profiles[profile].down_differential);
+            sysfs_write_int(ONDEMAND_PATH "up_threshold_multi_core",
+                            ondemand_profiles[profile].up_threshold_multi_core);
+            sysfs_write_int(ONDEMAND_PATH "optimal_freq",
+                            ondemand_profiles[profile].optimal_freq);
+            sysfs_write_int(ONDEMAND_PATH "sync_freq",
+                            ondemand_profiles[profile].sync_freq);
+            sysfs_write_int(ONDEMAND_PATH "up_threshold_any_cpu_load",
+                            ondemand_profiles[profile].up_threshold_any_cpu_load);
+            sysfs_write_int(ONDEMAND_PATH "sampling_rate",
+                            ondemand_profiles[profile].sampling_rate);
+            sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
+                            ondemand_profiles[profile].scaling_max_freq);
+            sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
+                            ondemand_profiles[profile].scaling_min_freq);
+            sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
+                            ondemand_profiles[profile].input_boost_freqs);
+            sysfs_write_str(GPU_GOVERNOR_PATH,
+                            ondemand_profiles[profile].gpu_governor);
         } else if (strncmp(governor, "interactive", 11) == 0) {
-                sysfs_write_int(INPUT_BOOST_PATH,
-                                interactive_profiles[profile].input_boost_on);
-                sysfs_write_int(INTERACTIVE_PATH "boost",
-                                interactive_profiles[profile].boost);
-                sysfs_write_int(INTERACTIVE_PATH "boostpulse_duration",
-                                interactive_profiles[profile].boostpulse_duration);
-                sysfs_write_int(INTERACTIVE_PATH "go_hispeed_load",
-                                interactive_profiles[profile].go_hispeed_load);
-                sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",
-                                interactive_profiles[profile].hispeed_freq);
-                sysfs_write_int(INTERACTIVE_PATH "io_is_busy",
-                                interactive_profiles[profile].io_is_busy);
-                sysfs_write_int(INTERACTIVE_PATH "min_sample_time",
-                                interactive_profiles[profile].min_sample_time);
-                sysfs_write_int(INTERACTIVE_PATH "sampling_down_factor",
-                                interactive_profiles[profile].sampling_down_factor);
-                sysfs_write_str(INTERACTIVE_PATH "target_loads",
-                                interactive_profiles[profile].target_loads);
-                sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
-                                interactive_profiles[profile].scaling_max_freq);
-                sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
-                                interactive_profiles[profile].scaling_min_freq);
-                sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
-                                interactive_profiles[profile].input_boost_freqs);
-                sysfs_write_str(GPU_GOVERNOR_PATH,
-                                interactive_profiles[profile].gpu_governor);
+            sysfs_write_int(INPUT_BOOST_PATH,
+                            interactive_profiles[profile].input_boost_on);
+            sysfs_write_int(INTERACTIVE_PATH "boost",
+                            interactive_profiles[profile].boost);
+            sysfs_write_int(INTERACTIVE_PATH "boostpulse_duration",
+                            interactive_profiles[profile].boostpulse_duration);
+            sysfs_write_int(INTERACTIVE_PATH "go_hispeed_load",
+                            interactive_profiles[profile].go_hispeed_load);
+            sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",
+                            interactive_profiles[profile].hispeed_freq);
+            sysfs_write_int(INTERACTIVE_PATH "above_hispeed_delay",
+                            interactive_profiles[profile].above_hispeed_delay);
+            sysfs_write_int(INTERACTIVE_PATH "timer_rate",
+                            interactive_profiles[profile].timer_rate);
+            sysfs_write_int(INTERACTIVE_PATH "io_is_busy",
+                            interactive_profiles[profile].io_is_busy);
+            sysfs_write_int(INTERACTIVE_PATH "min_sample_time",
+                            interactive_profiles[profile].min_sample_time);
+            sysfs_write_int(INTERACTIVE_PATH "max_freq_hysteresis",
+                            interactive_profiles[profile].max_freq_hysteresis);
+            sysfs_write_str(INTERACTIVE_PATH "target_loads",
+                            interactive_profiles[profile].target_loads);
+            sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
+                            interactive_profiles[profile].scaling_max_freq);
+            sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
+                            interactive_profiles[profile].scaling_min_freq);
+            sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
+                            interactive_profiles[profile].input_boost_freqs);
+            sysfs_write_str(GPU_GOVERNOR_PATH,
+                            interactive_profiles[profile].gpu_governor);
         } else {
-                sysfs_write_int(INPUT_BOOST_PATH,
-                                alt_profiles[profile].input_boost_on);
-                sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
-                                alt_profiles[profile].scaling_max_freq);
-                sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
-                                alt_profiles[profile].scaling_min_freq);
-                sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
-                                alt_profiles[profile].input_boost_freqs);
-                sysfs_write_str(GPU_GOVERNOR_PATH,
-                                alt_profiles[profile].gpu_governor);
+            sysfs_write_int(INPUT_BOOST_PATH,
+                            alt_profiles[profile].input_boost_on);
+            sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
+                            alt_profiles[profile].scaling_max_freq);
+            sysfs_write_int(CPUFREQ_PATH "scaling_min_freq",
+                            alt_profiles[profile].scaling_min_freq);
+            sysfs_write_str(INPUT_BOOST_PATH "ib_freqs",
+                            alt_profiles[profile].input_boost_freqs);
+            sysfs_write_str(GPU_GOVERNOR_PATH,
+                            alt_profiles[profile].gpu_governor);
         }
     }
 
@@ -296,21 +320,21 @@ static void process_video_encode_hint(void *metadata)
         if (strncmp(governor, "ondemand", 8) == 0) {
             ALOGD("process_video_encode_hint: ondemand");
             sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ?
-                    VID_ENC_IO_IS_BUSY :
-                    ondemand_profiles[current_power_profile].io_is_busy);
+                            VID_ENC_IO_IS_BUSY :
+                            ondemand_profiles[current_power_profile].io_is_busy);
 
             sysfs_write_int(ONDEMAND_PATH "sampling_down_factor", on ?
-                    VID_ENC_SAMPLING_DOWN_FACTOR :
-                    ondemand_profiles[current_power_profile].sampling_down_factor);
+                            VID_ENC_SAMPLING_DOWN_FACTOR :
+                            ondemand_profiles[current_power_profile].sampling_down_factor);
         } else if (strncmp(governor, "interactive", 11) == 0) {
             ALOGD("process_video_encode_hint: interactive");
             sysfs_write_int(INTERACTIVE_PATH "io_is_busy", on ?
-                    VID_ENC_IO_IS_BUSY :
-                    interactive_profiles[current_power_profile].io_is_busy);
+                            VID_ENC_IO_IS_BUSY :
+                            interactive_profiles[current_power_profile].io_is_busy);
 
             sysfs_write_int(INTERACTIVE_PATH "timer_rate", on ?
-                    VID_ENC_TIMER_RATE :
-                    interactive_profiles[current_power_profile].timer_rate);
+                            VID_ENC_TIMER_RATE :
+                            interactive_profiles[current_power_profile].timer_rate);
         }
     }
 }

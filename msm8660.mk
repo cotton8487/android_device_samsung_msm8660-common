@@ -135,9 +135,9 @@ PRODUCT_PACKAGES += \
     Snap \
     camera.msm8660
 
-#PRODUCT_COPY_FILES += \
-#    $(LOCAL_PATH)/prebuilt/priv-app/Snap.apk:system/priv-app/Snap/Snap.apk \
-#    $(LOCAL_PATH)/prebuilt/priv-app/Snap.odex:system/priv-app/Snap/oat/arm/Snap.odex
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/prebuilt/priv-app/Snap.apk:system/priv-app/Snap/Snap.apk \
+    $(LOCAL_PATH)/prebuilt/priv-app/Snap.odex:system/priv-app/Snap/oat/arm/Snap.odex
 
 # Chromecast
 PRODUCT_PROPERTY_OVERRIDES += \

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 The CyanogenMod Project
+ * Copyright (C) 2015-2016 The CyanogenMod Project
+ * Copyright (C) 2017, The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* Video encode hint optimisations */
+#define VID_ENC_TIMER_RATE 30000
+#define VID_ENC_IO_IS_BUSY 0
+#define VID_ENC_SAMPLING_DOWN_FACTOR 1
 
 enum {
     PROFILE_POWER_SAVE = 0,
@@ -30,7 +36,6 @@ typedef struct ondemand_governor_settings {
     int sampling_down_factor;
     int down_differential;
     int up_threshold_multi_core;
-    int down_differential_multi_core;
     int optimal_freq;
     int sync_freq;
     int up_threshold_any_cpu_load;
@@ -49,7 +54,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 486000,
         .sync_freq = 540000,
         .up_threshold_any_cpu_load = 80,
@@ -66,7 +70,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -83,7 +86,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -100,7 +102,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 918000,
         .sync_freq = 1026000,
         .up_threshold_any_cpu_load = 80,
@@ -117,7 +118,6 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_down_factor = 2,
         .down_differential = 10,
         .up_threshold_multi_core = 70,
-        .down_differential_multi_core = 3,
         .optimal_freq = 1512000,
         .sync_freq = 1512000,
         .up_threshold_any_cpu_load = 80,
@@ -134,11 +134,17 @@ typedef struct interactive_governor_settings {
     int boost;
     int boostpulse_duration;
     int go_hispeed_load;
+    int go_hispeed_load_off;
     int hispeed_freq;
+    int hispeed_freq_off;
+    int timer_rate;
+    int timer_rate_off;
+    int above_hispeed_delay;
     int io_is_busy;
     int min_sample_time;
-    int sampling_down_factor;
+    int max_freq_hysteresis;
     char *target_loads;
+    char *target_loads_off;
     int scaling_max_freq;
     int scaling_min_freq;
     char *input_boost_freqs;
@@ -149,13 +155,19 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
     [PROFILE_POWER_SAVE] = {
         .input_boost_on = 1,
         .boost = 0,
-        .boostpulse_duration = 0,
+        .boostpulse_duration = 40000,
         .go_hispeed_load = 90,
-        .hispeed_freq = 486000,
-        .io_is_busy = 0,
-        .min_sample_time = 60000,
-        .sampling_down_factor = 100000,
-        .target_loads = "95",
+        .go_hispeed_load_off = 110,
+        .hispeed_freq = 1026000,
+        .hispeed_freq_off = 1026000,
+        .timer_rate = 20000,
+        .timer_rate_off = 50000,
+        .above_hispeed_delay = 19000,
+        .io_is_busy = 1,
+        .min_sample_time = 39000,
+        .max_freq_hysteresis = 99000,
+        .target_loads = "85 1500000:90",
+        .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1026000,
         .scaling_min_freq = 192000,
         .input_boost_freqs = "756000 540000",
@@ -164,13 +176,19 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
     [PROFILE_BIAS_POWER] = {
         .input_boost_on = 1,
         .boost = 0,
-        .boostpulse_duration = 0,
+        .boostpulse_duration = 40000,
         .go_hispeed_load = 90,
-        .hispeed_freq = 486000,
-        .io_is_busy = 0,
-        .min_sample_time = 60000,
-        .sampling_down_factor = 100000,
-        .target_loads = "95",
+        .go_hispeed_load_off = 110,
+        .hispeed_freq = 1026000,
+        .hispeed_freq_off = 1026000,
+        .timer_rate = 20000,
+        .timer_rate_off = 50000,
+        .above_hispeed_delay = 19000,
+        .io_is_busy = 1,
+        .min_sample_time = 39000,
+        .max_freq_hysteresis = 99000,
+        .target_loads = "85 1500000:90",
+        .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1026000,
         .scaling_min_freq = 192000,
         .input_boost_freqs = "972000 864000",
@@ -179,13 +197,19 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
     [PROFILE_BALANCED] = {
         .input_boost_on = 1,
         .boost = 0,
-        .boostpulse_duration = 80000,
+        .boostpulse_duration = 40000,
         .go_hispeed_load = 90,
-        .hispeed_freq = 918000,
+        .go_hispeed_load_off = 110,
+        .hispeed_freq = 1026000,
+        .hispeed_freq_off = 1026000,
+        .timer_rate = 20000,
+        .timer_rate_off = 50000,
+        .above_hispeed_delay = 19000,
         .io_is_busy = 1,
-        .min_sample_time = 80000,
-        .sampling_down_factor = 100000,
-        .target_loads = "90",
+        .min_sample_time = 39000,
+        .max_freq_hysteresis = 99000,
+        .target_loads = "85 1500000:90",
+        .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 384000,
         .input_boost_freqs = "1242000 1026000",
@@ -194,13 +218,19 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
     [PROFILE_BIAS_PERFORMANCE] = {
         .input_boost_on = 1,
         .boost = 0,
-        .boostpulse_duration = 80000,
+        .boostpulse_duration = 40000,
         .go_hispeed_load = 90,
-        .hispeed_freq = 918000,
+        .go_hispeed_load_off = 110,
+        .hispeed_freq = 1026000,
+        .hispeed_freq_off = 1026000,
+        .timer_rate = 20000,
+        .timer_rate_off = 50000,
+        .above_hispeed_delay = 19000,
         .io_is_busy = 1,
-        .min_sample_time = 80000,
-        .sampling_down_factor = 100000,
-        .target_loads = "90",
+        .min_sample_time = 39000,
+        .max_freq_hysteresis = 99000,
+        .target_loads = "85 1500000:90",
+        .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 756000,
         .input_boost_freqs = "1242000 1026000",
@@ -209,13 +239,19 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
     [PROFILE_HIGH_PERFORMANCE] = {
         .input_boost_on = 0,
         .boost = 1,
-        .boostpulse_duration = 0, /* prevent unnecessary write */
-        .go_hispeed_load = 50,
-        .hispeed_freq = 1242000,
+        .boostpulse_duration = 40000,
+        .go_hispeed_load = 90,
+        .go_hispeed_load_off = 110,
+        .hispeed_freq = 1134000,
+        .hispeed_freq_off = 1134000,
+        .timer_rate = 20000,
+        .timer_rate_off = 50000,
+        .above_hispeed_delay = 19000,
         .io_is_busy = 1,
-        .min_sample_time = 60000,
-        .sampling_down_factor = 100000,
-        .target_loads = "80",
+        .min_sample_time = 39000,
+        .max_freq_hysteresis = 99000,
+        .target_loads = "85 1500000:90",
+        .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 384000,
         .input_boost_freqs = "1512000 1512000",

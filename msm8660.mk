@@ -48,6 +48,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=dyn \
+    debug.hwc.dynThreshold=1.9 \
+    debug.mdpcomp.maxlayer=3 \
     persist.hwc.mdpcomp.enable=false \
     ro.opengles.version=131072
 
@@ -78,15 +80,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # ART
 PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-flags=--no-watch-dog \
-    dalvik.vm.dex2oat-swap=false \
-    dalvik.vm.image-dex2oat-filter=speed
+    dalvik.vm.dex2oat-swap=false
 
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.low_ram=true \
-    persist.sys.force_highendgfx=true \
+    dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
+    ro.am.reschedule_service=true \
     ro.config.max_starting_bg=8 \
     ro.sys.fw.bg_apps_limit=16 \
     ro.sys.fw.use_trim_settings=true \
@@ -135,9 +135,9 @@ PRODUCT_PACKAGES += \
     Snap \
     camera.msm8660
 
-#PRODUCT_COPY_FILES += \
-#    $(LOCAL_PATH)/prebuilt/priv-app/Snap.apk:system/priv-app/Snap/Snap.apk \
-#    $(LOCAL_PATH)/prebuilt/priv-app/Snap.odex:system/priv-app/Snap/oat/arm/Snap.odex
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/prebuilt/priv-app/Snap.apk:system/priv-app/Snap/Snap.apk \
+    $(LOCAL_PATH)/prebuilt/priv-app/Snap.odex:system/priv-app/Snap/oat/arm/Snap.odex
 
 # Chromecast
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -267,6 +267,7 @@ PRODUCT_PACKAGES += \
     hostapd_default.conf \
     libnetcmdiface \
     libwpa_client \
+    macloader \
     wpa_supplicant \
     wpa_supplicant.conf
 

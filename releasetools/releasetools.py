@@ -16,3 +16,8 @@ def FullOTA_PostValidate(info):
 	info.script.AppendExtra('run_program("/tmp/install/bin/resize2fs_static", "/dev/block/mmcblk0p25");');
 	# run e2fsck
 	info.script.AppendExtra('run_program("/sbin/e2fsck", "-fy", "/dev/block/mmcblk0p25");');
+
+def FullOTA_InstallEnd(info):
+	info.script.Mount("/system")
+	info.script.AppendExtra('run_program("/sbin/sh", "-c", "busybox echo BOOTIMAGE=/dev/block/mmcblk0p8 > /system/.supersu");')
+	info.script.Unmount("/system")

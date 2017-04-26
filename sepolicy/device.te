@@ -4,3 +4,4 @@ type oncrpc_device, dev_type;
 type panel_dev, dev_type;
 type power_dev, dev_type;
 type rfkill_device, dev_type;
+type sbl1_block_device, dev_type;

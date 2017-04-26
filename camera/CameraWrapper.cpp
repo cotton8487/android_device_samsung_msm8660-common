@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012-2016, The CyanogenMod Project
+ * Copyright (C) 2017, The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +28,7 @@
 #include <cutils/log.h>
 #include <hardware/camera.h>
 #include <hardware/hardware.h>
+#include <hardware/power.h>
 #include <utils/String8.h>
 #include <utils/threads.h>
 
@@ -41,6 +43,7 @@ static bool wasVideo = false;
 
 static Mutex gCameraWrapperLock;
 static camera_module_t *gVendorModule = 0;
+static power_module_t *gPowerModule = 0;
 
 static int camera_device_open(const hw_module_t *module, const char *name,
         hw_device_t **device);
@@ -99,6 +102,22 @@ static int check_vendor_module()
              (const hw_module_t**)&gVendorModule);
     if (rv)
         ALOGE("Failed to open vendor camera module %d", rv);
+
+    return rv;
+}
+
+static int check_power_module()
+{
+    int rv;
+    ALOGV("%s", __FUNCTION__);
+
+    if (gPowerModule)
+        return 0;
+
+    rv = hw_get_module(POWER_HARDWARE_MODULE_ID,
+             (const hw_module_t**)&gPowerModule);
+    if (rv)
+        ALOGE("Failed to open power module %d", rv);
 
     return rv;
 }
@@ -286,6 +305,8 @@ static int camera_store_meta_data_in_buffers(struct camera_device *device,
 
 static int camera_start_recording(struct camera_device *device)
 {
+    int ret = 0;
+
     if (!device)
         return EINVAL;
 
@@ -294,7 +315,18 @@ static int camera_start_recording(struct camera_device *device)
 
     wasVideo = false;
 
-    return VENDOR_CALL(device, start_recording);
+    ret = VENDOR_CALL(device, start_recording);
+
+    if (ret == NO_ERROR) {
+        if (gPowerModule) {
+            if (gPowerModule->powerHint) {
+                gPowerModule->powerHint(gPowerModule, POWER_HINT_VIDEO_ENCODE, (void *)"state=1");
+            }
+        }
+    } else
+        ALOGE("Error starting recording");
+
+    return ret;
 }
 
 static void camera_stop_recording(struct camera_device *device)
@@ -309,6 +341,12 @@ static void camera_stop_recording(struct camera_device *device)
     /* Videos: Restart preview after stop recording */
     VENDOR_CALL(device, stop_preview);
     VENDOR_CALL(device, start_preview);
+
+    if (gPowerModule) {
+        if (gPowerModule->powerHint) {
+            gPowerModule->powerHint(gPowerModule, POWER_HINT_VIDEO_ENCODE, (void *)"state=0");
+        }
+    }
 }
 
 static int camera_recording_enabled(struct camera_device *device)
@@ -517,6 +555,8 @@ static int camera_device_open(const hw_module_t *module, const char *name,
     if (name != NULL) {
         if (check_vendor_module())
             return -EINVAL;
+
+        check_power_module();
 
         camera_id = atoi(name);
         num_cameras = gVendorModule->get_number_of_cameras();

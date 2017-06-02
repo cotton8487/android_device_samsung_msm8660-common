@@ -64,7 +64,7 @@ on enable-low-power
     write /sys/kernel/msm_thermal/sampling_ms 3000
 
 on property:sys.boot_completed=1
-    setprop sys.io.scheduler deadline
+    setprop sys.io.scheduler bfq
 
     write /sys/kernel/cpu_input_boost/enabled 1
     write /sys/kernel/msm_thermal/enabled 1

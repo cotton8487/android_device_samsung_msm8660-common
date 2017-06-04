@@ -241,10 +241,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sys.sdcardfs=true
 
-# Sensors
-PRODUCT_PACKAGES += \
-    sensors.MSM8660_SURF
-
 # SPN override
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilt/etc/selective-spn-conf.xml:system/etc/selective-spn-conf.xml

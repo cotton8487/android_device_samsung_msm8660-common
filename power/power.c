@@ -185,6 +185,9 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
     } else {
         if (strncmp(governor, "ondemand", 8) == 0) {
             sysfs_write_int(ONDEMAND_PATH "io_is_busy", on ? 1 : 0);
+            sysfs_write_int(ONDEMAND_PATH "sampling_rate", on ?
+                            ondemand_profiles[current_power_profile].sampling_rate :
+                            500000);
         } else if (strncmp(governor, "interactive", 11) == 0) {
             if (on) {
                 sysfs_write_int(INTERACTIVE_PATH "hispeed_freq",

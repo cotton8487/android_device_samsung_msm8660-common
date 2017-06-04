@@ -35,6 +35,7 @@
 #define SCALING_GOVERNOR_PATH "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 #define INTERACTIVE_PATH "/sys/devices/system/cpu/cpufreq/interactive/"
 #define ONDEMAND_PATH "/sys/devices/system/cpu/cpufreq/ondemand/"
+#define NOTIFY_ON_MIGRATE "/dev/cpuctl/cpu.notify_on_migrate"
 
 #define GPU_GOVERNOR_PATH "/sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor"
 #define INPUT_BOOST_PATH "/sys/kernel/cpu_input_boost/"
@@ -179,6 +180,8 @@ static void power_set_interactive(__attribute__((unused)) struct power_module *m
         sysfs_write_int(CPUFREQ_PATH "scaling_max_freq",
                         alt_profiles[current_power_profile].scaling_max_freq);
     }
+
+    sysfs_write_int(NOTIFY_ON_MIGRATE, on ? 1 : 0);
 
     if (get_scaling_governor() < 0) {
         ALOGE("Can't read scaling governor.");
@@ -339,6 +342,8 @@ static void process_video_encode_hint(void *metadata)
                             VID_ENC_TIMER_RATE :
                             interactive_profiles[current_power_profile].timer_rate);
         }
+
+        sysfs_write_int(NOTIFY_ON_MIGRATE, on ? 0 : 1);
     }
 }
 

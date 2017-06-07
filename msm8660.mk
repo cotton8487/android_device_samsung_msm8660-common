@@ -126,10 +126,6 @@ PRODUCT_PACKAGES += \
     libaudio-resampler \
     libaudioutils
 
-# Browser
-PRODUCT_PACKAGES += \
-    Gello
-
 # Camera
 PRODUCT_PACKAGES += \
     Snap \
@@ -244,10 +240,6 @@ PRODUCT_COPY_FILES += \
 # SDCardFS
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sys.sdcardfs=true
-
-# Sensors
-PRODUCT_PACKAGES += \
-    sensors.MSM8660_SURF
 
 # SPN override
 PRODUCT_COPY_FILES += \

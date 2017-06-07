@@ -1,5 +1,6 @@
 allow system_server init:unix_dgram_socket sendto;
 
+allow system_server cgroup:file rw_file_perms;
 allow system_server efs_file:dir search;
 allow system_server gamma_dev:file rw_file_perms;
 allow system_server graphics_device:chr_file rw_file_perms;

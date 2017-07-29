@@ -347,7 +347,7 @@
     </path>
 
     <path name="camcorder-mic">
-        <ctl name="camcoder_tx" value="1" />
+        <path name="speaker-mic" />
     </path>
 
     <path name="voice-dmic-ef">

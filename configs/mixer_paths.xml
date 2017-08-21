@@ -163,10 +163,15 @@
     <ctl name="low-latency-playback bt-sco" value="0" />
     <ctl name="low-latency-playback hdmi" value="0" />
     <ctl name="multi-channel-playback hdmi" value="0" />
+    <ctl name="compress-offload-playback" value="0" />
+    <ctl name="compress-offload-playback bt-sco" value="0" />
+    <ctl name="compress-offload-playback hdmi" value="0" />
     <ctl name="audio-record" value="0" />
     <ctl name="audio-record bt-sco" value="0" />
+    <ctl name="audio-record fm-radio" value="0" />
     <ctl name="low-latency-record" value="0" />
     <ctl name="low-latency-record bt-sco" value="0" />
+    <ctl name="low-latency-record fm-radio" value="0" />
     <ctl name="voice-call" value="0" />
 
     <!-- These are audio route (FE to BE) specific mixer settings -->
@@ -206,6 +211,23 @@
 
     <path name="multi-channel-playback hdmi">
         <ctl name="multi-channel-playback hdmi" value="1" />
+    </path>
+
+    <path name="compress-offload-playback">
+        <ctl name="compress-offload-playback" value="1" />
+    </path>
+
+    <path name="compress-offload-playback bt-sco">
+        <ctl name="compress-offload-playback bt-sco" value="1" />
+    </path>
+
+    <path name="compress-offload-playback hdmi">
+        <ctl name="compress-offload-playback hdmi" value="1" />
+    </path>
+
+    <path name="compress-offload-playback speaker-and-hdmi">
+        <path name="compress-offload-playback hdmi" />
+        <path name="compress-offload-playback" />
     </path>
 
     <path name="audio-record">

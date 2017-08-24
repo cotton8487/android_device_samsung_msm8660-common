@@ -98,7 +98,7 @@ TARGET_RELEASETOOLS_EXTENSIONS := device/samsung/msm8660-common/releasetools
 BOARD_RIL_CLASS := ../../../device/samsung/msm8660-common/ril
 
 # SDClang
-TARGET_USE_SDCLANG := true
+TARGET_USE_SDCLANG := false
 
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk

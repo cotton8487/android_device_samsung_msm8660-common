@@ -241,7 +241,7 @@ on fs
     mount_all fstab.qcom
 
     # Enable zRAM
-    #swapon_all /fstab.qcom
+    swapon_all /fstab.qcom
 
 # msm specific files that need to be created on /data
 on post-fs-data

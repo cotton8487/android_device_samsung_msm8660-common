@@ -56,6 +56,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.audio.fluence.speaker=false \
     persist.audio.fluence.voicecall=true \
+    audio.offload.buffer.size.kb=256 \
     qcom.hw.aac.encoder=true
 
 PRODUCT_PROPERTY_OVERRIDES += \

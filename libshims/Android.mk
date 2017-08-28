@@ -13,15 +13,25 @@
 # limitations under the License.
 
 LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := ril_shim.cpp
+
+LOCAL_SHARED_LIBRARIES := libbinder
+LOCAL_MODULE := libshim_ril
+LOCAL_MODULE_CLASS := SHARED_LIBRARIES
+
+include $(BUILD_SHARED_LIBRARY)
+
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
     MemoryBase.cpp \
-    samsung_ril.cpp \
     VectorImpl.cpp
 
 LOCAL_SHARED_LIBRARIES := libbinder
-LOCAL_MODULE := libsamsung_symbols
+LOCAL_MODULE := libshim_camera
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 
 include $(BUILD_SHARED_LIBRARY)

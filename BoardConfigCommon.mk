@@ -96,6 +96,7 @@ TARGET_RELEASETOOLS_EXTENSIONS := device/samsung/msm8660-common/releasetools
 
 # RIL
 BOARD_RIL_CLASS := ../../../device/samsung/msm8660-common/ril
+TARGET_NEEDS_GCC_LIBC := true
 
 # SDClang
 TARGET_USE_SDCLANG := true

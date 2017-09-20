@@ -58,7 +58,6 @@
 /system/bin/macloader                                     u:object_r:macloader_exec:s0
 /system/bin/qcks                                          u:object_r:mdm_helper_exec:s0
 /system/bin/qmiproxy                                      u:object_r:qmuxd_exec:s0
-/system/bin/thermald                                      u:object_r:thermal-engine_exec:s0
 /system/etc/firmware(/.*)?                                u:object_r:firmware_file:s0
 /sys/module/dhd/parameters/nvram_path                     u:object_r:sysfs_wifi_nv_path:s0
 /sys/devices/platform/sec-battery/power_supply/battery(/.*)?     u:object_r:sysfs_battery_supply:s0

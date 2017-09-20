@@ -92,7 +92,7 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_rate = 50000,
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 384000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_BIAS_PERFORMANCE] = {
@@ -108,7 +108,7 @@ static ondemand_power_profile ondemand_profiles[PROFILE_MAX] = {
         .sampling_rate = 50000,
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 756000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_HIGH_PERFORMANCE] = {
@@ -212,7 +212,7 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
         .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 384000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_BIAS_PERFORMANCE] = {
@@ -233,7 +233,7 @@ static interactive_power_profile interactive_profiles[PROFILE_MAX] = {
         .target_loads_off = "95 1512000:99",
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 756000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_HIGH_PERFORMANCE] = {
@@ -286,14 +286,14 @@ static alt_power_profile alt_profiles[PROFILE_MAX] = {
         .input_boost_on = 1,
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 384000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_BIAS_PERFORMANCE] = {
         .input_boost_on = 1,
         .scaling_max_freq = 1512000,
         .scaling_min_freq = 756000,
-        .input_boost_freqs = "1242000 1026000",
+        .input_boost_freqs = "1134000 1026000",
         .gpu_governor = "ondemand",
     },
     [PROFILE_HIGH_PERFORMANCE] = {

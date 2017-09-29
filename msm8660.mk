@@ -88,8 +88,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
     ro.am.reschedule_service=true \
-    ro.config.max_starting_bg=8 \
-    ro.sys.fw.bg_apps_limit=16 \
+    ro.config.max_starting_bg=2 \
+    ro.sys.fw.bg_apps_limit=8 \
     ro.sys.fw.use_trim_settings=true \
     ro.sys.fw.empty_app_percent=50 \
     ro.sys.fw.trim_empty_percent=100 \
@@ -155,13 +155,11 @@ PRODUCT_PACKAGES += \
 
 # Execmod wrapper
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/mpdecision \
     $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/netmgrd \
     $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/qcks \
     $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/qmiproxy \
     $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/qmuxd \
-    $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/rmt_storage \
-    $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/thermald
+    $(LOCAL_PATH)/prebuilt/bin/execmod-wrapper.sh:system/bin/rmt_storage
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \

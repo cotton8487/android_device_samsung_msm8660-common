@@ -48,14 +48,14 @@ on enable-low-power
     chmod 666 /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
     write /sys/devices/system/cpu/cpufreq/ondemand/up_threshold 90
     write /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy 1
-    write /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor 2
+    write /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor 4
     write /sys/devices/system/cpu/cpufreq/ondemand/down_differential 10
     write /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core 70
     write /sys/devices/system/cpu/cpufreq/ondemand/optimal_freq 918000
     write /sys/devices/system/cpu/cpufreq/ondemand/sync_freq 1026000
     write /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load 80
     write /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate 50000
-    write /sys/kernel/cpu_input_boost/ib_freqs "1242000 1026000"
+    write /sys/kernel/cpu_input_boost/ib_freqs "1134000 1242000"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 1400
     write /sys/kernel/msm_thermal/enabled 0
     write /sys/kernel/msm_thermal/low_thresh "1188000 64 60"
@@ -76,7 +76,7 @@ on property:sys.boot_completed=1
     write /sys/kernel/mm/ksm/sleep_millisecs 2000
     write /sys/kernel/mm/ksm/run 1
 
-    start mpdecision
+    write /sys/kernel/msm_mpdecision/conf/enabled 1
 
 on charger
     mount_all fstab.qcom

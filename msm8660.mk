@@ -79,12 +79,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungMSM8660RIL
 
-# ART
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-swap=false
-
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.low_ram=true \
+    persist.sys.force_highendgfx=true \
     dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
     ro.am.reschedule_service=true \

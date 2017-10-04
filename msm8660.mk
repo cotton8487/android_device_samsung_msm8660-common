@@ -54,10 +54,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.audio.fluence.speaker=false \
-    persist.audio.fluence.voicecall=true \
     audio.offload.buffer.size.kb=256 \
-    qcom.hw.aac.encoder=true
+    persist.audio.fluence.speaker=true \
+    persist.audio.fluence.voicecall=true \
+    persist.audio.fluence.voicerec=false \
+    qcom.hw.aac.encoder=true \
+    use.voice.path.for.pcm.voip=true
 
 PRODUCT_PROPERTY_OVERRIDES += \
     camera2.portability.force_api=1 \

@@ -122,6 +122,7 @@ PRODUCT_PACKAGES += \
     audio.usb.default \
     audio.r_submix.default \
     audio.primary.msm8660 \
+    audio_amplifier.msm8660 \
     libaudio-resampler \
     libaudioutils
 

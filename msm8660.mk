@@ -83,8 +83,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.low_ram=true \
-    persist.sys.force_highendgfx=true \
     dalvik.vm.jit.codecachesize=0 \
     config.disable_atlas=true \
     ro.am.reschedule_service=true \

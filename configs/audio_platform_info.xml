@@ -37,6 +37,8 @@
         <!-- Input devices -->
         <device name="SND_DEVICE_IN_HANDSET_DMIC" acdb_id="80" />
         <device name="SND_DEVICE_IN_SPEAKER_DMIC" acdb_id="81" />
+        <device name="SND_DEVICE_IN_SPEAKER_DMIC_AEC" acdb_id="63" />
+        <device name="SND_DEVICE_IN_SPEAKER_DMIC_NS" acdb_id="63" />
         <device name="SND_DEVICE_IN_VOICE_HANDSET_MIC" acdb_id="61" />
         <device name="SND_DEVICE_IN_VOICE_SPEAKER_MIC" acdb_id="63" />
         <device name="SND_DEVICE_IN_VOICE_HEADSET_MIC" acdb_id="65" />
@@ -57,6 +59,8 @@
     </pcm_ids>
 
     <device_names>
+        <device name="SND_DEVICE_IN_SPEAKER_DMIC_AEC" alias="voice-speaker-mic" />
+        <device name="SND_DEVICE_IN_SPEAKER_DMIC_NS" alias="voice-speaker-mic" />
         <device name="SND_DEVICE_IN_VOICE_HANDSET_MIC" alias="voice-handset-mic" />
     </device_names>
 </audio_platform_info>

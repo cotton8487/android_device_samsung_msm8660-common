@@ -54,10 +54,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
 
 PRODUCT_PROPERTY_OVERRIDES += \
+    audio.offload.buffer.size.kb=256 \
     persist.audio.fluence.speaker=false \
     persist.audio.fluence.voicecall=true \
-    audio.offload.buffer.size.kb=256 \
-    qcom.hw.aac.encoder=true
+    persist.audio.fluence.voicerec=false \
+    qcom.hw.aac.encoder=true \
+    use.voice.path.for.pcm.voip=true
 
 PRODUCT_PROPERTY_OVERRIDES += \
     camera2.portability.force_api=1 \
@@ -78,10 +80,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # RIL Class
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungMSM8660RIL
-
-# ART
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-swap=false
 
 # Low-Ram
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -124,6 +122,7 @@ PRODUCT_PACKAGES += \
     audio.usb.default \
     audio.r_submix.default \
     audio.primary.msm8660 \
+    audio_amplifier.msm8660 \
     libaudio-resampler \
     libaudioutils
 
